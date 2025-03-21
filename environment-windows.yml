@@ -1,0 +1,7 @@
+name: hnn-core-env
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+    # - "hnn_core[dev]==0.4rc4"
+    - "hnn_core[dev] @ git+https://github.com/jonescompneurolab/hnn-core.git"
