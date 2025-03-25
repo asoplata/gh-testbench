@@ -3,5 +3,5 @@ dependencies:
   - python=3.12
   - pip
   - pip:
-    # - "hnn_core[dev]==0.4rc4"
-    - "hnn_core[gui,opt] @ git+https://github.com/jonescompneurolab/hnn-core.git"
+    - "hnn_core[gui,opt]==0.4rc4"
+    # - "hnn_core[gui,opt] @ git+https://github.com/jonescompneurolab/hnn-core.git"
