@@ -7,7 +7,7 @@ dependencies:
   - openmpi > 5
   - pip
   - pip:
-    # - "hnn_core[dev]==0.4rc4"
+    # - "hnn_core[gui,opt,parallel]==0.4rc4"
     - "hnn_core[dev] @ git+https://github.com/jonescompneurolab/hnn-core.git"
 
 variables:
