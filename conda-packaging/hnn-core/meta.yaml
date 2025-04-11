@@ -1,34 +1,53 @@
+# Note: Due to the use of Jinja2 templates in conda build, comments CAN change the build process!
+# See https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
+# Many of the requirements are taken from NEURON's conda-build recipe for osx-arm64
+# man i need to make a general README for this recipe
+#
+# # neuron build recipe stuff starts here --------------------
+# TODO numpy max requirement is new!
+# - conda-forge::neuron >=7.7  # [not win]
+# - h5io 0.2.4 pyhecae5ae_0 # [osx and py==312]
+# - python_abi 3.12.* *_cp312  # taken from NEURON's conda-build recipe for osx-arm64
+
 {% set name = "hnn-core" %}
-# {% set version = "0.3" %}
-# {% set version = "0.4rc4" %}
 {% set version = "0.4.1" %}
+{% set build_number = 0 %}
+
+{% set python_inclusive_min = "3.12" %}
+{% set python_exclusive_max = "3.13" %}
 
 package:
   name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
+  # TODO replace entry with underscore after next version update
   url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hnn_core-{{ version }}.tar.gz"
   # url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
   sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537 # 0.4.1
-  # sha256: 652c79eb0a6268f03dac29c8725d44ad1e94bbf17e14240f2b15f73cf8ec660e # 0.4rc4
-  # sha256: 8f17636d2ad8fbbeeab828d3176ba4a6d678fbf81305cbdc1cc98a9d35c13cf9 # 0.3?
 
 build:
-  # skip: true  # [py<37]
+  skip: true  # [py<312 or win or aarch64]
   entry_points:
     - hnn-gui=hnn_core.gui.gui:launch
-  # script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  number: 0
+  number: {{ build_number }}
 
 # Neuron needs to be installed using pip in the build script, NOT from a conda package like below
-# TODO numpy max requirement is new!
-# - conda-forge::neuron >=7.7  # [not win]
-# - h5io 0.2.4 pyhecae5ae_0 # [osx and py==312]
+# TODO run export warnings: openmpi, ncurses, readline, find-libpython, python (lol), mpi4py
 requirements:
+  build:
+    - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
+    - find-libpython
+    - pip
+    - setuptools >=40.8.0
+    - ncurses >=6.5,<7.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+    - numpy >=1.19,<2  # CHANGED after taken from NEURON's conda-build recipe for osx-arm64
+    - openmpi >=5.0.5,<6.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+    - mpi4py
+    - readline >=8.2,<9.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+
   host:
-    - python >=3.12,<3.13.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - python_abi 3.12.* *_cp312  # taken from NEURON's conda-build recipe for osx-arm64
+    - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - pip
     - setuptools >=40.8.0
@@ -39,8 +58,7 @@ requirements:
     - readline >=8.2,<9.0a0  # taken from NEURON's conda-build recipe for osx-arm64
 
   run:
-    - python >=3.12,<3.13.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - python_abi 3.12.* *_cp312  # taken from NEURON's conda-build recipe for osx-arm64
+    - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - h5io
     - ipykernel
@@ -82,6 +100,7 @@ test:
   commands:
     - pip check
     - hnn-gui --help
+    - python -c "from hnn_core import jones_2009_model, simulate_dipole ; simulate_dipole(jones_2009_model(), tstop=20)"
   requires:
     - pip
 

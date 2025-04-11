@@ -6,4 +6,4 @@ echo $'\nSee https://docs.conda.io/projects/conda-build/en/stable/install-conda-
 
 conda activate base
 # Use the recommended "grayskull" for building our initial skeleton
-conda install -y -q conda-build conda-forge::grayskull
+conda install -y -q conda-build conda-forge::grayskull conda-verify
