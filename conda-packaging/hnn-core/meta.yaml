@@ -27,7 +27,7 @@ source:
   sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537 # 0.4.1
 
 build:
-  skip: true  # [py<312 or win or aarch64]
+  skip: true  # [py<312 or aarch64]
   entry_points:
     - hnn-gui=hnn_core.gui.gui:launch
   number: {{ build_number }}
@@ -40,22 +40,22 @@ requirements:
     - find-libpython
     - pip
     - setuptools >=40.8.0
-    - ncurses >=6.5,<7.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - numpy >=1.19,<2  # CHANGED after taken from NEURON's conda-build recipe for osx-arm64
-    - openmpi >=5.0.5,<6.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - mpi4py
-    - readline >=8.2,<9.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+    - ncurses >=6.5,<7.0a0  # [not win]
+    - numpy >=1.19,<2
+    - openmpi >=5.0.5,<6.0a0  # [not win]
+    - mpi4py  # [not win]
+    - readline >=8.2,<9.0a0  # [not win]
 
   host:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - pip
     - setuptools >=40.8.0
-    - ncurses >=6.5,<7.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - numpy >=1.19,<2  # CHANGED after taken from NEURON's conda-build recipe for osx-arm64
-    - openmpi >=5.0.5,<6.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - mpi4py
-    - readline >=8.2,<9.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+    - ncurses >=6.5,<7.0a0  # [not win]
+    - numpy >=1.19,<2
+    - openmpi >=5.0.5,<6.0a0  # [not win]
+    - mpi4py  # [not win]
+    - readline >=8.2,<9.0a0  # [not win]
 
   run:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
@@ -70,11 +70,11 @@ requirements:
     - psutil
     - scipy
     - voila
-    - ncurses >=6.5,<7.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - numpy >=1.19,<2  # CHANGED after taken from NEURON's conda-build recipe for osx-arm64
-    - openmpi >=5.0.5,<6.0a0  # taken from NEURON's conda-build recipe for osx-arm64
-    - mpi4py
-    - readline >=8.2,<9.0a0  # taken from NEURON's conda-build recipe for osx-arm64
+    - ncurses >=6.5,<7.0a0  # [not win]
+    - numpy >=1.19,<2
+    - openmpi >=5.0.5,<6.0a0  # [not win]
+    - mpi4py  # [not win]
+    - readline >=8.2,<9.0a0  # [not win]
 
     # # from run section of neuron's conda build (latest v8.2.4)
     # - __osx >=10.13
