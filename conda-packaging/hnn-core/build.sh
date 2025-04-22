@@ -8,7 +8,7 @@ echo ""
 if [ `uname` == Darwin ]; then
     if [ `uname -m` == arm64 ]; then
         NRN_WHL_URL=https://files.pythonhosted.org/packages/76/89/4e659723194edb3351a37b60a474843e68f676bc983c41047c234b544494/NEURON-8.2.6-cp312-cp312-macosx_11_0_arm64.whl
-    elif [ `uname -m` == arm64 ]; then
+    elif [ `uname -m` == x86_64 ]; then
         NRN_WHL_URL=https://files.pythonhosted.org/packages/d7/52/50ae4bf3dcc87cf71daa559f1b188b4a8e85f7f19073d976eb12821f8692/NEURON-8.2.6-cp312-cp312-macosx_10_15_x86_64.whl
     fi
 fi
