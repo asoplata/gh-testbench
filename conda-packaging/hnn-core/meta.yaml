@@ -1,4 +1,4 @@
-{% set name = "hnn-core-all" %}
+{% set name = "hnn-core" %}
 {% set version = "0.4.1" %}
 {% set build_number = 0 %}
 
@@ -14,22 +14,12 @@ source:
   sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537
 
 build:
-  skip: true  # [py<312 or win or aarch64]
+  skip: true  # [py<312 or py>313 or win or aarch64]
   entry_points:
     - hnn-gui=hnn_core.gui.gui:launch
   number: {{ build_number }}
 
 requirements:
-  build:
-    - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
-    - find-libpython
-    - pip
-    - setuptools >=40.8.0
-    - ncurses >=6.5,<7.0a0
-    - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0
-    - mpi4py
-    - readline >=8.2,<9.0a0
   host:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
@@ -75,4 +65,4 @@ about:
 
 extra:
   recipe-maintainers:
-    - AddYourGitHubIdHere
+    - asoplata
