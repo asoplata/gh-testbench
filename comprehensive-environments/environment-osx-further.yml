@@ -1,0 +1,17 @@
+name: hnn-core-env-further
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - mpi4py
+  - openmpi > 5
+  - pip
+  - pip:
+    - "hnn_core[dev]==0.4rc4"
+    # - "hnn_core[dev] @ git+https://github.com/jonescompneurolab/hnn-core.git"
+
+variables:
+  # does NOT work
+  # MPI_LIB_NRN_PATH: $MPI_LIB_NRN_PATH:$CONDA_PREFIX/lib/libmpi.dylib
+  # MPI_LIB_NRN_PATH: $CONDA_PREFIX/lib/libmpi.dylib
+  DYLD_FALLBACK_LIBRARY_PATH: "${CONDA_PREFIX}/lib"

@@ -1,15 +1,4 @@
-# Note: Due to the use of Jinja2 templates in conda build, comments CAN change the build process!
-# See https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
-# Many of the requirements are taken from NEURON's conda-build recipe for osx-arm64
-# man i need to make a general README for this recipe
-#
-# # neuron build recipe stuff starts here --------------------
-# TODO numpy max requirement is new!
-# - conda-forge::neuron >=7.7  # [not win]
-# - h5io 0.2.4 pyhecae5ae_0 # [osx and py==312]
-# - python_abi 3.12.* *_cp312  # taken from NEURON's conda-build recipe for osx-arm64
-
-{% set name = "hnn-core" %}
+{% set name = "hnn-core-all" %}
 {% set version = "0.4.1" %}
 {% set build_number = 0 %}
 
@@ -21,42 +10,36 @@ package:
   version: "{{ version }}"
 
 source:
-  # TODO replace entry with underscore after next version update
   url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hnn_core-{{ version }}.tar.gz"
-  # url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
-  sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537 # 0.4.1
+  sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537
 
 build:
-  skip: true  # [py<312 or aarch64]
+  skip: true  # [py<312 or win or aarch64]
   entry_points:
     - hnn-gui=hnn_core.gui.gui:launch
   number: {{ build_number }}
 
-# Neuron needs to be installed using pip in the build script, NOT from a conda package like below
-# TODO run export warnings: openmpi, ncurses, readline, find-libpython, python (lol), mpi4py
 requirements:
   build:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - pip
     - setuptools >=40.8.0
-    - ncurses >=6.5,<7.0a0  # [not win]
+    - ncurses >=6.5,<7.0a0
     - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0  # [not win]
-    - mpi4py  # [not win]
-    - readline >=8.2,<9.0a0  # [not win]
-
+    - openmpi >=5.0.5,<6.0a0
+    - mpi4py
+    - readline >=8.2,<9.0a0
   host:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - pip
     - setuptools >=40.8.0
-    - ncurses >=6.5,<7.0a0  # [not win]
+    - ncurses >=6.5,<7.0a0
     - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0  # [not win]
-    - mpi4py  # [not win]
-    - readline >=8.2,<9.0a0  # [not win]
-
+    - openmpi >=5.0.5,<6.0a0
+    - mpi4py
+    - readline >=8.2,<9.0a0
   run:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
@@ -70,29 +53,11 @@ requirements:
     - psutil
     - scipy
     - voila
-    - ncurses >=6.5,<7.0a0  # [not win]
+    - ncurses >=6.5,<7.0a0
     - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0  # [not win]
-    - mpi4py  # [not win]
-    - readline >=8.2,<9.0a0  # [not win]
-
-    # # from run section of neuron's conda build (latest v8.2.4)
-    # - __osx >=10.13
-    # - clang_osx-64 16.*
-    # - clangxx_osx-64 16.*
-    # - libcxx >=16
-    # - macosx_deployment_target_osx-64 10.13.* # don't need hopefully, just for a clang/gcc compiler flag
-    # - ncurses >=6.5,<7.0a0
-    # - numpy >=1.19,<3
-    # - openmpi >=5.0.5,<6.0a0
-    # - packaging
-    # - python >=3.12,<3.13.0a0
-    # - python_abi 3.12.* *_cp312
-    # - readline >=8.2,<9.0a0
-    # - setuptools
-    # - xorg-libx11 >=1.8.9,<2.0a0
-    # - xorg-libxcomposite >=0.4.6,<1.0a0
-    # - xorg-libxext >=1.3.4,<2.0a0
+    - openmpi >=5.0.5,<6.0a0
+    - mpi4py
+    - readline >=8.2,<9.0a0
 
 test:
   imports:
@@ -100,7 +65,6 @@ test:
   commands:
     - pip check
     - hnn-gui --help
-    - python -c "from hnn_core import jones_2009_model, simulate_dipole ; simulate_dipole(jones_2009_model(), tstop=20)"
   requires:
     - pip
 

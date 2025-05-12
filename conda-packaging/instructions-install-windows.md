@@ -42,14 +42,14 @@ echo "unset OLD_LD_LIBRARY_PATH" >> $CONDA_PREFIX/etc/conda/deactivate.d/env_var
 export OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib
 conda install -y -q "openmpi>5" mpi4py -c conda-forge
-pip install "hnn-core[gui,opt,parallel]" 
+pip install "hnn-core[gui,opt,parallel]"
 ```
 
 9. HNN should now be installed! Next, run the following commands, and **write down the number** that is output. (This is the number of "Cores" for MPI that you should use later.)
 
 ```bash
 conda activate hnn-core-env
-python -c "import psutil ; print(psutil.cpu_count(logical=False)-1)" 
+python -c "import psutil ; print(psutil.cpu_count(logical=False)-1)"
 ```
 
 10. Test that everything is working by starting the HNN GUI. This consists of two steps. First, enter the following command in your Ubuntu app

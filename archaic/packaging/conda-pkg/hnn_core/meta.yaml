@@ -1,0 +1,55 @@
+{% set name = "hnn_core" %}
+{% set version = "0.4rc4" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+  sha256: 652c79eb0a6268f03dac29c8725d44ad1e94bbf17e14240f2b15f73cf8ec660e
+
+build:
+  number: 0
+  entry_points:
+    - hnn-gui=hnn_core.gui.gui:launch
+  script: "{{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation"
+
+requirements:
+  host:
+    - h5io
+    - matplotlib >=3.5.3
+    - neuron >=7.7   # [ not win ]
+    - numpy >=1.14
+    - pip
+    - python
+    - scipy
+  run:
+    - h5io
+    - matplotlib >=3.5.3
+    - neuron >=7.7   # [ not win ]
+    - numpy >=1.14
+    - python
+    - scipy
+
+test:
+  imports:
+    - hnn_core
+    - hnn_core.externals
+    - hnn_core.gui
+    - hnn_core.optimization
+  commands:
+    - hnn-gui --help
+
+about:
+  home: The package home page
+  license: "BSD (3-clause)"
+  license_family: BSD
+  license_file: 
+  summary: "Code for biophysical simulation of a cortical column using Neuron"
+  doc_url: 
+  dev_url: 
+
+extra:
+  recipe-maintainers:
+    - your-github-id-here

@@ -1,0 +1,53 @@
+{% set name = "hnn-core" %}
+{% set version = "0.3" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hnn-core-{{ version }}.tar.gz
+  sha256: 8f17636d2ad8fbbeeab828d3176ba4a6d678fbf81305cbdc1cc98a9d35c13cf9
+
+build:
+  skip: true  # [py<37]
+  entry_points:
+    - hnn-gui=hnn_core.gui.gui:launch
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  number: 0
+
+requirements:
+  build:
+    - python
+    - setuptools >=40.8.0
+    - neuron >=7.7  # [not win]
+    - pip
+  host:
+    - python
+    - setuptools >=40.8.0
+    - neuron >=7.7  # [not win]
+    - pip
+  run:
+    - python
+    - numpy >=1.14
+    - neuron >=7.7  # [not win]
+    - matplotlib-base >=3.5.3
+    - scipy
+
+test:
+  imports:
+    - hnn_core
+  commands:
+    - pip check
+    - hnn-gui --help
+  requires:
+    - pip
+
+about:
+  summary: Code for biophysical simulation of a cortical column using Neuron
+  license: BSD-3-Clause
+  license_file: LICENSE
+
+extra:
+  recipe-maintainers:
+    - AddYourGitHubIdHere

@@ -1,0 +1,20 @@
+# Note: Due to the use of Jinja2 templates in conda build, comments CAN change the build process!
+# See https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors
+# Many of the requirements are taken from NEURON's conda-build recipe for osx-arm64
+# man i need to make a general README for this recipe
+#
+
+
+  # TODO replace entry with underscore after next version update
+
+  # url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+
+# Neuron needs to be installed using pip in the build script, NOT from a conda package like below
+# TODO run export warnings: openmpi, ncurses, readline, find-libpython, python (lol), mpi4py
+
+
+# # neuron build recipe stuff starts here --------------------
+# TODO numpy max requirement is new!
+# - conda-forge::neuron >=7.7  # [not win]
+# - h5io 0.2.4 pyhecae5ae_0 # [osx and py==312]
+# - python_abi 3.12.* *_cp312  # taken from NEURON's conda-build recipe for osx-arm64
