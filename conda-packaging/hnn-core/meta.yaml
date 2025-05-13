@@ -6,7 +6,7 @@
 {% set python_exclusive_max = "3.13" %}
 
 package:
-  name: "{{ name|lower }}"
+  name: "hnn-core-all"
   version: "{{ version }}"
 
 source:
