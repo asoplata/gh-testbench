@@ -6,7 +6,7 @@
 {% set python_exclusive_max = "3.13" %}
 
 package:
-  name: "hnn-core-all"
+  name: "{{ name|lower }}"
   version: "{{ version }}"
 
 source:
@@ -27,26 +27,16 @@ requirements:
     - setuptools >=40.8.0
     - ncurses >=6.5,<7.0a0
     - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0
-    - mpi4py
     - readline >=8.2,<9.0a0
   run:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
     - find-libpython
     - h5io
-    - ipykernel
-    - ipympl
-    - ipython
-    - ipywidgets >8.0.0
-    - joblib
     - matplotlib-base >=3.5.3
     - psutil
     - scipy
-    - voila
     - ncurses >=6.5,<7.0a0
     - numpy >=1.19,<2
-    - openmpi >=5.0.5,<6.0a0
-    - mpi4py
     - readline >=8.2,<9.0a0
 
 test:
@@ -54,14 +44,22 @@ test:
     - hnn_core
   commands:
     - pip check
-    - hnn-gui --help
   requires:
     - pip
 
 about:
-  summary: Code for biophysical simulation of a cortical column using Neuron
-  license: BSD-3-Clause
+  home: https://hnn.brown.edu
+  license: BSD 3-Clause
   license_file: LICENSE
+  license_family: BSD
+  license_url: https://github.com/jonescompneurolab/hnn-core/blob/master/LICENSE
+  summary: HNN-Core install (API-only) for cortical simulation with NEURON
+  description: |
+    This package provides the API of the Human Neocortical Neurosolver
+    (HNN-Core), which enables biophysical simulations of cortical columns
+    and their EEG/MEG-related electric currents using NEURON.
+  dev_url: https://github.com/jonescompneurolab/hnn-core
+  doc_url: https://jonescompneurolab.github.io/hnn-core/stable/index.html
 
 extra:
   recipe-maintainers:
