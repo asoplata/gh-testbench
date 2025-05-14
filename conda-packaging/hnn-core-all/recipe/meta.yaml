@@ -48,6 +48,7 @@ requirements:
     - openmpi >=5.0.5,<6.0a0
     - mpi4py
     - readline >=8.2,<9.0a0
+    - scikit-learn
 
 test:
   imports:
