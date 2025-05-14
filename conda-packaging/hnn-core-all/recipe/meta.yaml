@@ -67,9 +67,10 @@ about:
   license_url: https://github.com/jonescompneurolab/hnn-core/blob/master/LICENSE
   summary: HNN-Core install (all features) for cortical simulation with NEURON
   description: |
-    This package provides the API and all features of the Human Neocortical
-    Neurosolver (HNN-Core), which enables biophysical simulations of cortical
-    columns and their EEG/MEG-related electric currents using NEURON.
+    This package provides the API and all features of the Human Neocortical Neurosolver (HNN-Core),
+    which enables biophysical simulations of cortical columns and their EEG/MEG-related electric
+    currents using NEURON. Note that this package MUST be installed with the conda-forge channel as
+    well, such as using "conda install hnn-core-all -c jonescompneurolab -c conda-forge".
   dev_url: https://github.com/jonescompneurolab/hnn-core
   doc_url: https://jonescompneurolab.github.io/hnn-core/stable/index.html
 
