@@ -26,6 +26,14 @@ purge
 
 - From the cloud:
 
+## How to upload
+
+Example: (replace the architecture-specific directories and ultimate filename with whatever version you're uploading:
+
+```
+anaconda upload --user jonescompneurolab $CONDA_PREFIX/conda-bld/linux-64/hnn-core-all-0.4.1-py312_0.conda
+```
+
 ## Explanation of recipe contents
 
 - `build.sh`, `meta.yaml`, and `run_test.py` are all filenames with special meaning in the Conda build process; you probably do not want to rename them.
