@@ -21,13 +21,5 @@ elif [ `uname` == Linux ]; then
     #
     # Note that if you DO use the croot method, you MUST copy
     # '/tmp/asdf/linux-64' to your '$CONDA_PREFIX/conda-bld', and then run
-    # 'conda index' on the latter directory.    conda-build --croot=/tmp/asdf recipe -c defaults -c conda-forge
-    # If the above 'croot' attempt runs into errors, especially with paths or
-    # filesystem issues, then you can try uncommenting the following command
-    # and using it instead. This 'croot' method for building on systems where
-    # the main partition is encrypted is preferred, according to conda-build's
-    # documentation, but the 'prefix-length' argument will work too. However,
-    # the documentation claims it is less portable.
-    #
-    # conda-build --prefix-length=80 recipe -c defaults -c conda-forge
+    # 'conda index' on the latter directory.
 fi
