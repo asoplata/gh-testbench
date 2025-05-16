@@ -18,7 +18,7 @@ elif [ `uname` == Linux ]; then
     # conda-build --prefix-length=80 recipe -c defaults -c conda-forge
 
     echo "
--->Post-build Linux instructions: Note that the package, if it was built
+--> Post-build Linux instructions: Note that the package, if it was built
 correctly, has been built inside your TEMPORARY directory, i.e. '/tmp/asdf'.
 This is done because Conda tries to build packages in environments where the
 path exceeds 255 characters on purpose, but this is broken if you are building
@@ -26,11 +26,11 @@ on a partition that is disk-encrypted. There are two methods documented in the
 build script to get around this, and the default build script uses one of them.
 This also means you need to do a couple extra steps:
 
---> AFTER you have built BOTH the 'hnn-core' and 'hnn-core-all' packages, you
-should do the following:
+--> AFTER you have built the package, you should do the following:
 
-1. Copy the new directory at '/tmp/asdf/linux-64' (itself, not just the
-contents) into '\$CONDA_PREFIX/conda-bld'. For example:
+1. Copy the directory at '/tmp/asdf/linux-64' (itself, not just the
+contents) into '\$CONDA_PREFIX/conda-bld'. This is safe to do regardless
+if you have built one or both packages. For example:
 
     cp -r /tmp/asdf/linux-64 \$CONDA_PREFIX/conda-bld
 
