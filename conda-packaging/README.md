@@ -1,9 +1,5 @@
 # hnn-core-conda-packaging
 
-TODO
-license
-copyright
-
 This repo has all the code and metadata you need to **build** the Conda packages for HNN-Core. These
 packages (`hnn-core-all` and `hnn-core`) should be remade and uploaded every time there is a new
 version release. Note that currently, this is still a very "manual" process. This is for developers
@@ -24,16 +20,16 @@ This gives you what you need to build two distinct packages:
 
 ### Supported platforms
 
-The below keywords are how the Conda package building system refers to these platforms. Definition: when I say "platform", I mean combination of OS and CPU architecture.
+The below keywords are how the Conda package building system refers to these platforms (see the table at https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors ). Definition: when I say "platform", I mean combination of OS and CPU architecture.
 
 - `osx-arm64` (MacOS on Apple Silicon)
 - `osx-64` (MacOS on x86_64)
-- `linux-64` (Linux on x86_64) (can be *used* on Windows via WSL, but not necessarily *built* using WSL. May be possible, however.)b
+- `linux-64` (Linux on x86_64) (can be *used* on Windows via WSL, but not necessarily *built* using WSL.)
 - Linux on ARM is *not* supported yet. This can be added easily, but I don't have hardware to test it on.
 
-### Supported versions
+### Supported Python versions
 
-Currently, these packages are ONLY built for Python 3.12 specifically. Since these packages require the user to have Anaconda, the user always has access to 3.12 specifically. We can expand to other versions in the future if we need to, but one version should be sufficient for now.
+Currently, these packages are ONLY built for Python 3.12 specifically. Since these packages require the user to have Anaconda, the user always has access to 3.12 specifically. We can expand to other versions in the future if we need to, but one version should be sufficient for now. There are several reasons to not support multiple Python versions (especially because of the use of NEURON wheel files, see the section on `build.sh` below for details).
 
 # How to use this repo to build and upload the packages
 
@@ -50,11 +46,11 @@ Currently, these packages are ONLY built for Python 3.12 specifically. Since the
 5. Run the script `00-install-build-deps.sh` using `./00-install-build-deps.sh` or however you like. This installs the builder packages.
 
 6. Begin by building the `hnn-core-all` package-file for your local platform, using the following sub-steps:
-    A. `cd` into `hnn-core-all`. This subdirectory contains everything you should need for building the `hnn-core-all` package-file on your local platform.
-    B. Run the local script `01-build-pkg.sh` using `./01-build-pkg.sh` or however you like. This will take a couple minutes, and this is where any problems will arise, since this is the actual package build step. See details below in the [How building works](#how-building-works) section.
-    C. Assuming the last step was successful, there should now be some new files and folders located in a directory you can access with `cd $CONDA_PREFIX/conda-bld`. There should be a directory that is one of the above platform keywords of your local platform, e.g. `osx-arm64`. Inside that directory will be the "package-file" I keep mentioning, which will be have a name that ends in `.conda` like `<pkg name>-<pkg version>-<python version>_<build number>.conda`. For example, in my case, there is now a file there called `hnn-core-all-0.4.1-py312_0.conda`. This is the "package-file" that all this work is for.
-    D. TIP: if you ever want to clean your build environment (e.g. after a bad build didn't finish), run `conda build purge-all`.
-    E. TIP: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to a different name, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
+    i. `cd` into `hnn-core-all`. This subdirectory contains everything you should need for building the `hnn-core-all` package-file on your local platform.
+    ii. Run the local script `01-build-pkg.sh` using `./01-build-pkg.sh` or however you like. This will take a couple minutes, and this is where any problems will arise, since this is the actual package build step. See details below in the [How building works](#how-building-works) section.
+    iii. Assuming the last step was successful, there should now be some new files and folders located in a directory you can access with `cd $CONDA_PREFIX/conda-bld`. There should be a directory that is one of the above platform keywords of your local platform, e.g. `osx-arm64`. Inside that directory will be the "package-file" I keep mentioning, which will be have a name that ends in `.conda` like `<pkg name>-<pkg version>-<python version>_<build number>.conda`. For example, in my case, there is now a file there called `hnn-core-all-0.4.1-py312_0.conda`. This is the "package-file" that all this work is for.
+    iv. TIP: if you ever want to clean your build environment (e.g. after a bad build didn't finish), run `conda build purge-all`.
+    v. TIP: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to a different name, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
 
 7. Test the newly-built package file:
     A. First, install it into a new environment using the following:
