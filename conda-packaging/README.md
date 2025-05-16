@@ -46,31 +46,31 @@ Currently, these packages are ONLY built for Python 3.12 specifically. Since the
 5. Run the script `00-install-build-deps.sh` using `./00-install-build-deps.sh` or however you like. This installs the builder packages.
 
 6. Begin by building the `hnn-core-all` package-file for your local platform, using the following sub-steps:
-    i. `cd` into `hnn-core-all`. This subdirectory contains everything you should need for building the `hnn-core-all` package-file on your local platform.
-    ii. Run the local script `01-build-pkg.sh` using `./01-build-pkg.sh` or however you like. This will take a couple minutes, and this is where any problems will arise, since this is the actual package build step. See details below in the [How building works](#how-building-works) section.
-    iii. Assuming the last step was successful, there should now be some new files and folders located in a directory you can access with `cd $CONDA_PREFIX/conda-bld`. There should be a directory that is one of the above platform keywords of your local platform, e.g. `osx-arm64`. Inside that directory will be the "package-file" I keep mentioning, which will be have a name that ends in `.conda` like `<pkg name>-<pkg version>-<python version>_<build number>.conda`. For example, in my case, there is now a file there called `hnn-core-all-0.4.1-py312_0.conda`. This is the "package-file" that all this work is for.
-    iv. TIP: if you ever want to clean your build environment (e.g. after a bad build didn't finish), run `conda build purge-all`.
-    v. TIP: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to a different name, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
+    1. `cd` into `hnn-core-all`. This subdirectory contains everything you should need for building the `hnn-core-all` package-file on your local platform.
+    2. Run the local script `01-build-pkg.sh` using `./01-build-pkg.sh` or however you like. This will take a couple minutes, and this is where any problems will arise, since this is the actual package build step. See details below in the [How building works](#how-building-works) section.
+    3. Assuming the last step was successful, there should now be some new files and folders located in a directory you can access with `cd $CONDA_PREFIX/conda-bld`. There should be a directory that is one of the above platform keywords of your local platform, e.g. `osx-arm64`. Inside that directory will be the "package-file" I keep mentioning, which will be have a name that ends in `.conda` like `<pkg name>-<pkg version>-<python version>_<build number>.conda`. For example, in my case, there is now a file there called `hnn-core-all-0.4.1-py312_0.conda`. This is the "package-file" that all this work is for.
+    4. TIP: if you ever want to clean your build environment (e.g. after a bad build didn't finish), run `conda build purge-all`.
+    5. TIP: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to a different name, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
 
 7. Test the newly-built package file:
-    A. First, install it into a new environment using the following:
+    1. First, install it into a new environment using the following:
 ```
 conda create -y -q -n test python=3.12
 conda activate test
 conda install hnn-core-all -c local -c conda-forge  # Run this line exactly how it is!
 ```
-    B. Then, run some test sims like with `hnn-gui` or whatever, and MAKE SURE to test that MPI parallelism works. Also test that Optimization works, by, for example, making sure that this script https://github.com/jonescompneurolab/hnn-core/blob/master/examples/howto/optimize_evoked.py at least successfully starts running the second iteration. You could also copy and run the tests locally, such as by downloading https://github.com/jonescompneurolab/hnn-core/tree/master/hnn_core/tests , installing `pip install pytest`, then running `pytest .`.
-    C. If possible, try running the new package-file on another computer of the same platform. See [How to install](#how-to-install) below for how to do that (it's a little weird).
+    2. Then, run some test sims like with `hnn-gui` or whatever, and MAKE SURE to test that MPI parallelism works. Also test that Optimization works, by, for example, making sure that this script https://github.com/jonescompneurolab/hnn-core/blob/master/examples/howto/optimize_evoked.py at least successfully starts running the second iteration. You could also copy and run the tests locally, such as by downloading https://github.com/jonescompneurolab/hnn-core/tree/master/hnn_core/tests , installing `pip install pytest`, then running `pytest .`.
+    3. If possible, try running the new package-file on another computer of the same platform. See [How to install](#how-to-install) below for how to do that (it's a little weird).
 
 8. Finally, once you're satisfied that the package works, it's time to upload it. You will be uploading it from the command line, similar to how we've uploaded to Pypi in the past.
-    A. If you haven't already, make an account on [anaconda.org](https://anaconda.org), and get your user account added to the [jonescompneurolab Organization](https://anaconda.org/jonescompneurolab) for permissions. WARNING: Note that you need an account on "anaconda dot ORG", not "dot COM" or "dot CLOUD"! Anaconda has many websites and you need to use [anaconda.org](https://anaconda.org). The different websites do not necessarily talk to each other!
-    B. In your terminal run the command `anaconda login`. Note that that uses `anaconda` and not just `conda`! Also, if it complains that it doesn't have the command, you may need to `conda install anaconda-client`.
-    C. You should now be ready to upload. Remember that "package-file" I specifically mentioned before? You need to upload that, but for the Organization, not your personal account. The example command I used to upload it before is this:
+    1. If you haven't already, make an account on [anaconda.org](https://anaconda.org), and get your user account added to the [jonescompneurolab Organization](https://anaconda.org/jonescompneurolab) for permissions. WARNING: Note that you need an account on "anaconda dot ORG", not "dot COM" or "dot CLOUD"! Anaconda has many websites and you need to use [anaconda.org](https://anaconda.org). The different websites do not necessarily talk to each other!
+    2. In your terminal run the command `anaconda login`. Note that that uses `anaconda` and not just `conda`! Also, if it complains that it doesn't have the command, you may need to `conda install anaconda-client`.
+    3. You should now be ready to upload. Remember that "package-file" I specifically mentioned before? You need to upload that, but for the Organization, not your personal account. The example command I used to upload it before is this:
 ```
 anaconda upload --user jonescompneurolab $CONDA_PREFIX/conda-bld/osx-arm64/hnn-core-all-0.4.1-py312_0.conda
 ```
 Note that you will probably have to change the platform-specific directory name, and the exact filename, if you are reading this.
-    D. Fortunately, in contrast to Pypi and `conda-forge`, uploads to [anaconda.org](https://anaconda.org) are NOT immutable, and CAN be changed. If you need to replace the package-file because of a mistake or any reason, you can Anaconda's existing version with a different local one, using a command like below (the only difference is the additional `--force` argument):
+    4. Fortunately, in contrast to Pypi and `conda-forge`, uploads to [anaconda.org](https://anaconda.org) are NOT immutable, and CAN be changed. If you need to replace the package-file because of a mistake or any reason, you can Anaconda's existing version with a different local one, using a command like below (the only difference is the additional `--force` argument):
 ```
 anaconda upload --force --user jonescompneurolab $CONDA_PREFIX/conda-bld/osx-arm64/hnn-core-all-0.4.1-py312_0.conda
 ```
