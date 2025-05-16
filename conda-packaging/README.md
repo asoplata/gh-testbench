@@ -1,9 +1,17 @@
-
 # hnn-core-conda-packaging
 
-This repo has all the code and metadata you need to build the Conda packages for HNN-Core. These packages (`hnn-core-all` and `hnn-core`) should be remade and uploaded every time there is a new version release. Note that currently, this is still a very "manual" process.
+TODO
+license
+copyright
 
-This repo is based off of discusison in https://github.com/jonescompneurolab/hnn-core/issues/950 .
+This repo has all the code and metadata you need to **build** the Conda packages for HNN-Core. These
+packages (`hnn-core-all` and `hnn-core`) should be remade and uploaded every time there is a new
+version release. Note that currently, this is still a very "manual" process. This is for developers
+building our Conda package -- if you are just trying to *install* the HNN-Core Conda package, then
+please see our [Installation Guide
+here](https://jonescompneurolab.github.io/hnn-core/stable/install.html).
+
+This repo is based off of discussion in https://github.com/jonescompneurolab/hnn-core/issues/950 .
 
 # Summary
 
@@ -45,6 +53,8 @@ Currently, these packages are ONLY built for Python 3.12 specifically. Since the
     A. `cd` into `hnn-core-all`. This subdirectory contains everything you should need for building the `hnn-core-all` package-file on your local platform.
     B. Run the local script `01-build-pkg.sh` using `./01-build-pkg.sh` or however you like. This will take a couple minutes, and this is where any problems will arise, since this is the actual package build step. See details below in the [How building works](#how-building-works) section.
     C. Assuming the last step was successful, there should now be some new files and folders located in a directory you can access with `cd $CONDA_PREFIX/conda-bld`. There should be a directory that is one of the above platform keywords of your local platform, e.g. `osx-arm64`. Inside that directory will be the "package-file" I keep mentioning, which will be have a name that ends in `.conda` like `<pkg name>-<pkg version>-<python version>_<build number>.conda`. For example, in my case, there is now a file there called `hnn-core-all-0.4.1-py312_0.conda`. This is the "package-file" that all this work is for.
+    D. TIP: if you ever want to clean your build environment (e.g. after a bad build didn't finish), run `conda build purge-all`.
+    E. TIP: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to a different name, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
 
 7. Test the newly-built package file:
     A. First, install it into a new environment using the following:
@@ -138,7 +148,7 @@ For the below, I will paste consectuve lines taken exactly from the current vers
 {% set python_exclusive_max = "3.13" %}
 ```
 
-First, all the fancy stuff inside `{% ... %}`: this is called "Jinja Templating" (see both https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#templating-with-jinja and https://en.wikipedia.org/wiki/Jinja_(template_engine) ), and essentially allows you to create and access some programming inside your config file here. Note that the variables we create using Jinja are NOT necessarily used elsewhere in the build process (meaning you can make your own), but conversely you CAN use Jinja to access build system stuff. We don't need anything fancy ourselves, however. The `inclusive/exclusive` vars are ones I made up for example, and are used later. Note that the `name` variable is NOT!!! the name of the package! Instead, it is ONLY a variable called `name` used in this build config! (Remember, we are building the `hnn-core-all` package, NOT the `hnn-core` package in this file!).
+First, all the fancy stuff inside `{% ... %}`: this is called "Jinja Templating" (see both https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#templating-with-jinja and https://en.wikipedia.org/wiki/Jinja_(template_engine) ), and essentially allows you to create and access some "programmability" inside your config file here. Note that the variables we create with Jinja are NOT required to be used elsewhere in the build process (meaning you can make your own), but conversely you CAN use Jinja to access build system stuff. We don't need anything fancy ourselves, however. The `inclusive/exclusive` vars are ones I made up for example, and are used later. Note that the `name` variable is NOT!!! the name of the package! Instead, it is ONLY a variable called `name` used in this build config! (Remember, we are building the `hnn-core-all` package, NOT the `hnn-core` package in this file!).
 
 ```yaml
 package:
@@ -150,23 +160,25 @@ source:
   sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537
 ```
 
+Here, you can clearly see that there is a `package: name: "hnn-core-all"` key-value. This is the one that "matters" and decides the name of the package.
 
+For `source`: Even though the Conda packaging ecosystem tries to be as independent from the Pypi ecosystem (more on that soon), it is common for the source code of the root package to be downloaded from Pypi. We could also use Git or other methods as well, but using straight from Pypi is preferred. Note that currently, the URL of our Pypi distributable uses both "hnn-core" (with a hyphen) as the package name, but the distributable filename itself uses "hnn_core" (with an underscore). This is partly a result of the filename output by our Pypi package release process (see https://github.com/jonescompneurolab/hnn-core/wiki/How-to-make-a-release ).
 
-
-package:
-  name: "hnn-core-all"
-  version: "{{ version }}"
-
-source:
-  url: "https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/hnn_core-{{ version }}.tar.gz"
-  sha256: 50c8ec5eea289b23e38b8f2be5643d117c13552a179d5eb7efd3d64224c9e537
-
+```yaml
 build:
   skip: true  # [py<312 or py>313 or win or aarch64]
   entry_points:
     - hnn-gui=hnn_core.gui.gui:launch
   number: {{ build_number }}
+```
 
+Sit down for this part. Firstly, check out this:  https://conda-forge.org/docs/maintainer/understanding_conda_forge/life_cycle/ especially https://conda-forge.org/docs/maintainer/understanding_conda_forge/life_cycle/#the-life-cycle-on-conda-forge . We currently use the easiest way to distribute our Conda packages, which is described in the previous links: we use `conda build` locally to create packages, repeat the process locally on all the platforms we want to support (which requires that we *own a computer* on that platform), then upload them all to anaconda.org. This means we don't need to worry about things like binary compability ( https://docs.conda.io/projects/conda-build/en/latest/resources/variants.html ), nor do we have to create a `conda_build_config.yaml` (see same link) and tell it what our `target_platform` is. Currently, our "target platform" is "whatever the platform is that we're building on". This keeps things simple (we know exactly what we're building), but requires us to manually build the package on a physical computer that has that platform.
+
+The professional way to build our packages would be using CI runners like how `conda-forge` does it (see https://conda-forge.org/docs/maintainer/understanding_conda_forge/feedstocks/#package-building-diagram ); in this case, we ONLY provide recipe scripts/metadata, and then different scripts build our package independently for each platform that we desire. Eventually, this will be really nice to have, but may require a large amount of work, and is greatly complicated by our dependency on NEURON (I'll address that later). *Most* of the "target platform" documentation on the conda and conda-forge website sources are about how to control these complex systems. We do need to provide platform-specific builds (specifically because of NEURON, and maybe MPI too), but for now, building on local hardware is the simplest solution.
+
+IF we were using CI (aka the cloud) to build our packages, then the `skip:` line is the first place we would begin controlling *which* platforms (or Python versions, etc.) the system builds for or avoids building for. It does this by using "preprocessing selectors" (see https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#preprocessing-selectors ) which are *defined in the comment on the `skip` line*. Currently, this ensures that the package will NOT attempt to be built (and likely fail) if you are trying to build it on native Windows or on Linux on ARM64 (aka `aarch64`). It's arguably unnecessary, but it doesn't hurt anything, and it also provides a working example of if we need to use preprocessing selectors in the future (e.g. such as if `osx` versus `linux` need different dependencies).
+
+```yaml
 requirements:
   host:
     - python >={{ python_inclusive_min }},<{{ python_exclusive_max }}
@@ -197,7 +209,17 @@ requirements:
     - scikit-learn
     - scipy
     - voila
+```
 
+The `requirements` section lists our Conda dependencies, including our Python version (see  https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#requirements-section ). `host` doubles as listing the dependencies for our package `build` requirements, which are different the requirements needed to fully `run` the software. (The `host/build/run` usage is another example of how Conda build is philosophically targeted at *servers* providing Anaconda packages). The most important thing about this section is that this is **fully independent of `pip` aka Pypi**! These are required CONDA packages, NOT `pip` packages! This is because, again, you need to be thinking from the perspective that we are in the Conda ecosystem.
+
+Just to make things more confusing, these conda package dependencies can be from any conda channel. Recall from `./hnn-core-all/01-build-pkg.sh` that at build-time, we explicitly tell `conda-build` to use both the channels `defaults` and `conda-forge`. This is necessary because we need to use the more-recent version of some packages (e.g. `openmpi>5`), which are only available on `conda-forge`. However, if we exclusively use `conda-forge`, then other packages end up running into filename-clashing issues. So, currently, at build-time, we tell Conda to use both of these channels to find us a solution to our dependency tree that still uses the version constraints that we need for the above.
+
+I will mention that there are certain version constraints above that are NOT found in `hnn-core`'s `setup.py` dependencies. You may be wondering where they come from, and the answer is the un-compressed recipe dependency list from https://anaconda.org/conda-forge/neuron . They appear to be necessary to install and use NEURON in our build process. However...
+
+You may have noticed something: NEURON is not in this list! Not only that, but the NEURON conda package link I just wrote also is not present! That's because NEURON is a very special case, and we'll discuss that soon when we get to the `recipe/build.sh` build script.
+
+```yaml
 test:
   imports:
     - hnn_core
@@ -206,7 +228,13 @@ test:
     - hnn-gui --help
   requires:
     - pip
+```
 
+From here on, the `meta.yaml` is pretty self-explanatory. These are some, but not all, of the tests that are run automatically after package-building. These were created originally by the use of `grayskull` to automatically build the skeleton of the conda package directly from our Pypi package directions, but that only needs to be done the first time you're creating a package (see https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs-skeleton.html ).
+
+The remainder of the tests are in the specially-named file `recipe/run_test.py`. This special filename (see https://docs.conda.io/projects/conda-build/en/latest/concepts/recipe.html ) is also automatically run using the test install of the package after it is built. That file doesn't really need explaining.
+
+```yaml
 about:
   home: https://hnn.brown.edu
   license: BSD 3-Clause
@@ -225,37 +253,44 @@ about:
 extra:
   recipe-maintainers:
     - asoplata
+```
 
+This is also pretty self-explanatory. Pretty much the same thing as the metadata for `hnn-core/setup.py`. And now we're done going through `meta.yaml` (the hardest part)!
 
+### `run_test.py`
 
-note that we do NOT have a NEURON requirement here! that's because
+As I said above, this is a specially-named python script that includes tests to run automatically as part of the package building process. Self-explanatory.
 
-pip
+### `build.sh`
 
-wheels
+This is specially-named "build script" file (see https://docs.conda.io/projects/conda-build/en/latest/concepts/recipe.html ). To be pedantic/pedagogical, the *overall* Conda build process looks like this:
 
-purge
+1. `conda-build` creates and enters a test environment, usually something with a really weird name like `/opt/anaconda3/anaconda3/conda-bld/hnn-core_1747425893143/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold`. The placeholders are supposed to be there, since they have to do with making sure everything works inside the system's file-path-character-limit.
+2. Conda then installs your `build` or `host` `requirement` dependencies.
+3. The `build.sh` script is run. (If you're building on native Windows, the equivalent is a `bld.bat` file, but we don't build on native Windows, since we can provide the Linux version of the package for use via WSL).
+4. Conda then tests the install, using both the tests mentioned in `meta.yaml` and running our `run_test.py` script. It's possible that the tests are actually run in a *second* test environment where the built package has been installed, in part to test its installation.
+5. You end up with both a "package-file" described before (e.g. in `$CONDA_PREFIX/conda-bld/<platform>/<stuff>.conda`), and its metadata is registered in your `local` Conda channel.
 
+So, our `build.sh` is where the magic happens. Note that this is run *after* our `build/host` Conda dependencies have been installed. In theory this script can do anything, but for our packages, this file does 4 things, in order, and based on which platform you are currently on:
 
-Caveats
+1. Copies the `conda activate/deactivate` environment-variable-setting scripts from `env_scripts`, depending on if you're in Linux or Mac.
+2. Manually downloads a **specific** NEURON-Python *wheel* file that is specific to the platform, NEURON version, and Python version.
+3. The line `${PYTHON} -m pip install --no-deps ${NRN_WHL_URL}` installs the NEURON wheel file we just downloaded, but using *no PyPI- or `pip`-specific dependencies* (hence `--no-deps`). Instead, it has to install correctly only using the Conda dependencies we have installed.
+4. Then, `${PYTHON} -m pip install . -vv --no-deps --no-build-isolation` **installs `hnn-core`**. This uses the copy downloaded from `meta.yaml`'s `source: url: <tarball>.tar.gz`). Again, this is also installed using ONLY the Conda dependencies, and NOT using PyPI-specific dependencies.
 
-clobber
+There's some important things to note about this build script:
 
+1. We have to do it this really annoying way because Conda creates an extremely isolated test environment. Part of this isolation is that Conda *disables PyPI dependency resolution*. This means that we cannot use the `pip` installer's integration with the PyPI index to find, match, etc. packages on the PyPI index. We CAN provide `pip` with an Internet-accessible wheel file like what we do for NEURON, and it will install that. But the Conda test environment will *not* simply let us `pip install NEURON`. Because NEURON provides many wheels ( https://pypi.org/project/NEURON/#files ) that are platform-specific, that means our install process needs to be platform-specific as well.
 
+2. "But Austin", you say, "Why not use the `conda-forge` NEURON package https://anaconda.org/conda-forge/neuron ? Good question. The main reason is that this only provides builds for `linux-64` and `osx-64` platforms, but *not* `osx-arm64`. A smaller reason is that the version (v8.2.4) is slightly out of date compared to current stable (v8.2.6), and we can access the latter using the wheels. These NEURON conda packages are built by https://github.com/conda-forge/neuron-feedstock , but compiling/building NEURON using Conda dependencies is much more complex than our current HNN-Core Conda package process. It's kind of a much larger superset of the complexity in this current repo. This and #1 are the reason why NEURON is not listed in our `meta.yaml`'s `requirements`.
 
-- needs forge AND defaults channel for building
-- nrn wheels
-- shipping compiled objects
-    - Xcode
-    - linux build-essential
+3. Because our build script is essentially running `pip install hnn-core`, this means that we are running our full install program inside the environment that ends up in the package. Importantly, since `hnn-core` compiles NEURON `mod` files as part of its install process (see https://github.com/jonescompneurolab/hnn-core/blob/master/setup.py#L41-L74 ), *those resulting compiled files are included in our Conda package*. Ironically, because we have to provide platform-specific builds for other reasons, this isn't really a problem. But it needs to be noted: for a user, the Conda package install method for HNN-Core will NOT compile the `mod` files in fresh way, UNLIKE our `pip` install method. Instead, the Conda package is "shipping" compiled versions of the `mod` files.
 
-### Explanation of recipe contents
+4. Because of #3, since `pip install hnn-core` requires the successful running of `nrnivmodl` to compile our `mod` files, that means that anyone building our Conda packages has to have the pre-requisites for `nrnivmodl`. On MacOS, this means they need to have already installed Xcode Command-Line Tools. On Linux, they need to have installed `make` and whatever their basic system compilation suite package is, such as using `sudo apt-get install build-essential` on Ubuntu.
 
-- `build.sh`, `meta.yaml`, and `run_test.py` are all filenames with special meaning in the Conda build process; you probably do not want to rename them.
+### Scripts in `env_script`
 
-- in `meta.yaml` files, some of the comments ARE required, and DO impact the build process, using Jinja templating.
-
-- Note: I can attest, it *is* possible to break your Conda install *as a whole* by doing certain actions. E.g., renaming a package `*.conda` file to something else, then trying to install it locally. This seems to break some kind of Conda-wide metadata configuration and makes it impossible to install packages into existing environments. So uhh don't do that.
+These are replacement `conda activate/deactivate` scripts for the old `echo "export OLD_DYLD_FALLBACK_LIBRARY_PATH=\$DYLD_FALLBACK_LIBRARY_PATH" >> etc/conda/activate.d/env_vars.sh` etc. lines that are needed for MPI installation. These are *automatically installed* through the Conda install process, which means that if a user installs our Conda packages, they no longer need to worry about changing their environment variables! Hooray.
 
 # Future work
 
